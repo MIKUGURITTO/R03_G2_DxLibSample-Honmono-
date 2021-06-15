@@ -79,6 +79,7 @@ AUDIO EndBGM;
 
 //効果音
 AUDIO PlayerSE;
+AUDIO PushEnter;
 
 //画面の切り替え
 BOOL IsFadeOut = FALSE;		//フェードアウト
@@ -254,6 +255,7 @@ int WINAPI WinMain(
 	DeleteSoundMem(EndBGM.handle);		//音楽をメモリ上から削除
 
 	DeleteSoundMem(PlayerSE.handle);	//音楽をメモリ上から削除
+	DeleteSoundMem(PushEnter.handle);	//音楽をメモリ上から削除
 
 	//ＤＸライブラリ使用の終了処理
 	DxLib_End();
@@ -306,6 +308,7 @@ BOOL GameLoad(VOID)
 	if (!LoadAudio(&EndBGM, ".\\Audio\\game_End.wav", 255, DX_PLAYTYPE_LOOP)) { return FALSE; }
 
 	if (!LoadAudio(&PlayerSE, ".\\Audio\\決定、ボタン押下1.mp3", 255, DX_PLAYTYPE_BACK)) { return FALSE; }
+	if (!LoadAudio(&PushEnter, ".\\Audio\\Enter.wav", 255, DX_PLAYTYPE_BACK)) { return FALSE; }
 
 	return TRUE;	//全て読み込みた！
 }
@@ -453,6 +456,9 @@ VOID TitleProc(VOID)
 	{
 		//BGMを止める
 		StopSoundMem(TitleBGM.handle);
+
+		//効果音を流す
+		PlaySoundMem(PushEnter.handle, PushEnter.playType);
 
 		//シーン切り替え
 		//次のシーンの初期化をここで行うと楽
