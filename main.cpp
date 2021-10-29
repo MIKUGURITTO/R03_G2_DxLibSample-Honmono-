@@ -64,8 +64,17 @@ MOVIE playMovie;
 //プレイヤー
 CHARACTOR player;
 
+//敵
+CHARACTOR teki1;
+CHARACTOR teki2;
+CHARACTOR teki3;
+CHARACTOR teki4;
+
 //ゴール
 CHARACTOR Goal;
+
+//エンド背景
+CHARACTOR end1;
 
 //画像を読み込む
 IMAGE TitleLogo;	//タイトルロゴ
@@ -231,8 +240,8 @@ int WINAPI WinMain(
 			}
 		}
 
-		//FPS値を描画
-		FPSDraw();
+		/*FPS値を描画
+		FPSDraw();*/
 
 		//FPS値を待つ
 		FPSWait();
@@ -244,7 +253,12 @@ int WINAPI WinMain(
 	DeleteGraph(playMovie.handle);		//動画をメモリ上から削除
 
 	DeleteGraph(player.img.handle);		//画像をメモリ上から削除
+	DeleteGraph(teki1.img.handle);		//画像をメモリ上から削除
+	DeleteGraph(teki2.img.handle);		//画像をメモリ上から削除
+	DeleteGraph(teki3.img.handle);		//画像をメモリ上から削除
+	DeleteGraph(teki4.img.handle);		//画像をメモリ上から削除
 	DeleteGraph(Goal.img.handle);		//画像をメモリ上から削除
+	DeleteGraph(end1.img.handle);		//画像をメモリ上から削除
 
 	DeleteGraph(TitleLogo.handle);		//画像をメモリ上から削除
 	DeleteGraph(TitleEnter.handle);		//画像をメモリ上から削除
@@ -294,7 +308,12 @@ BOOL GameLoad(VOID)
 
 	//画像を読み込み
 	if (!LoadImageMem(&player.img, ".\\Image\\Player.png")) { return FALSE; }
-	if (!LoadImageMem(&Goal.img, ".\\Image\\Goal.jpg")) { return FALSE; }
+	if (!LoadImageMem(&teki1.img, ".\\Image\\teki1.png")) { return FALSE; }
+	if (!LoadImageMem(&teki2.img, ".\\Image\\teki2.png")) { return FALSE; }
+	if (!LoadImageMem(&teki3.img, ".\\Image\\teki3.png")) { return FALSE; }
+	if (!LoadImageMem(&teki4.img, ".\\Image\\teki4.png")) { return FALSE; }
+	if (!LoadImageMem(&Goal.img, ".\\Image\\Goal.png")) { return FALSE; }
+	if (!LoadImageMem(&end1.img, ".\\Image\\end1.png")) { return FALSE; }
 
 	//ロゴを読み込む
 	if (!LoadImageMem(&TitleLogo, ".\\Image\\Title.png")) { return FALSE; }
@@ -304,10 +323,9 @@ BOOL GameLoad(VOID)
 
 	//音楽を読み込む
 	if (!LoadAudio(&TitleBGM, ".\\Audio\\game_Title.mp3", 255, DX_PLAYTYPE_LOOP)) { return FALSE; }
-	if (!LoadAudio(&PlayBGM, ".\\Audio\\game_Play.mp3", 255, DX_PLAYTYPE_LOOP)) { return FALSE; }
-	if (!LoadAudio(&EndBGM, ".\\Audio\\game_End.wav", 255, DX_PLAYTYPE_LOOP)) { return FALSE; }
+	if (!LoadAudio(&PlayBGM, ".\\Audio\\game_Play.wav", 255, DX_PLAYTYPE_LOOP)) { return FALSE; }
+	if (!LoadAudio(&EndBGM, ".\\Audio\\game_End.mp3", 255, DX_PLAYTYPE_LOOP)) { return FALSE; }
 
-	if (!LoadAudio(&PlayerSE, ".\\Audio\\決定、ボタン押下1.mp3", 255, DX_PLAYTYPE_BACK)) { return FALSE; }
 	if (!LoadAudio(&PushEnter, ".\\Audio\\Enter.wav", 255, DX_PLAYTYPE_BACK)) { return FALSE; }
 
 	return TRUE;	//全て読み込みた！
@@ -387,7 +405,7 @@ BOOL LoadAudio(AUDIO* audio, const char* path, int volume, int playType)
 VOID GameInit(VOID)
 {
 	//プレイヤーを初期化
-	player.img.x = GAME_WIDTH / 2 - player.img.width / 2;	//中央寄せ
+	player.img.x = GAME_WIDTH / 13 - player.img.width / 13;	//中央寄せ
 	player.img.y = GAME_HEIGHT / 2 - player.img.height / 2;	//中央寄せ
 	player.speed = 500;		//スピード
 	player.img.IsDraw = TRUE;	//描画できる！
@@ -404,6 +422,35 @@ VOID GameInit(VOID)
 	//当たり判定を更新する
 	CollUpdate(&Goal);	//プレイヤーの当たり判定のアドレス
 
+	//敵を初期化
+	teki1.img.x = GAME_WIDTH / 4 - teki1.img.width / 4;	//中央寄せ
+	teki1.img.y = GAME_HEIGHT / 5 - teki1.img.height / 5;	//中央寄せ
+	teki1.speed = 300;	//スピード
+	teki1.img.IsDraw = TRUE;	//描画できる！
+
+	teki2.img.x = GAME_WIDTH / 2 - teki2.img.width / 2;	//中央寄せ
+	teki2.img.y = GAME_HEIGHT / 2 - teki2.img.height / 2;	//中央寄せ
+	teki2.speed = 300;	//スピード
+	teki2.img.IsDraw = TRUE;	//描画できる！
+
+	teki3.img.x = GAME_WIDTH / 3 - teki3.img.width / 3;	//中央寄せ
+	teki3.img.y = GAME_HEIGHT / 1 - teki3.img.height / 1;	//中央寄せ
+	teki3.speed = 300;	//スピード
+	teki3.img.IsDraw = TRUE;	//描画できる！
+
+	teki4.img.x = GAME_WIDTH / 2 - teki4.img.width / 3;	//中央寄せ
+	teki4.img.y = GAME_HEIGHT / 8 - teki4.img.height / 8;	//中央寄せ
+	teki4.speed = 300;	//スピード
+	teki4.img.IsDraw = TRUE;	//描画できる！
+
+	end1.img.x = GAME_WIDTH / 2 - end1.img.width / 2;	//中央寄せ
+	end1.img.y = GAME_HEIGHT / 2 - end1.img.height / 2;	//中央寄せ
+	end1.speed = 300;	//スピード
+	end1.img.IsDraw = TRUE;	//描画できる！
+
+	//当たり判定を更新する
+	CollUpdate(&teki1);	//プレイヤーの当たり判定のアドレス
+
 	//タイトルロゴの位置を決める
 	TitleLogo.x = GAME_WIDTH / 2 - TitleLogo.width / 2;   //中央揃え
 	TitleLogo.y = 100;
@@ -418,8 +465,8 @@ VOID GameInit(VOID)
 	PushEnterBrink = FALSE;
 
 	//クリアロゴの位置を決める
-	EndClear.x = GAME_WIDTH / 2 - EndClear.width / 2;    //中央揃え
-	EndClear.y = GAME_HEIGHT / 2 - EndClear.height / 2;      //中央揃え
+	EndClear.x = GAME_WIDTH / 10 - EndClear.width / 10;    //中央揃え
+	EndClear.y = GAME_HEIGHT / 10 - EndClear.height / 10;      //中央揃え
 }
 
 /// <summary>
@@ -487,6 +534,17 @@ VOID TitleProc(VOID)
 /// </summary>
 VOID TitleDraw(VOID)
 {
+	//背景動画を描画
+
+	//もし、動画が再生されていないとき
+	if (GetMovieStateToGraph(playMovie.handle) == 0)
+	{
+		//再生する
+		SeekMovieToGraph(playMovie.handle, 0);	//シークバーを最初に戻す
+		PlayMovieToGraph(playMovie.handle);		//動画を再生
+	}
+	//動画を描画(画像を引き伸ばす)
+	DrawExtendGraph(0, 0, GAME_WIDTH, GAME_HEIGHT, playMovie.handle, TRUE);
 
 	//タイトルロゴの描画
 	DrawGraph(TitleLogo.x, TitleLogo.y, TitleLogo.handle, TRUE);
@@ -526,7 +584,8 @@ VOID TitleDraw(VOID)
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
-	DrawString(0, 0, "タイトル画面", GetColor(0, 0, 0));
+	/*DrawString(0, 0, "タイトル画面", GetColor(0, 0, 0));*/
+
 	return;
 }
 
@@ -569,42 +628,42 @@ VOID PlayProc(VOID)
 	{
 		player.img.y -= player.speed * fps.DeltaTime;
 
-		//動くときの効果音を追加
+		/*動くときの効果音を追加
 		if (CheckSoundMem(PlayerSE.handle) == 0)
 		{
 			PlaySoundMem(PlayerSE.handle, PlayerSE.playType);
-		}
+		}*/
 	}
 	if (KeyDown(KEY_INPUT_DOWN) == TRUE)
 	{
 		player.img.y += player.speed * fps.DeltaTime;
 
-		//動くときの効果音を追加
+		/*動くときの効果音を追加
 		if (CheckSoundMem(PlayerSE.handle) == 0)
 		{
 			PlaySoundMem(PlayerSE.handle, PlayerSE.playType);
-		}
+		}*/
 	}
 
 	if (KeyDown(KEY_INPUT_LEFT) == TRUE)
 	{
 		player.img.x -= player.speed * fps.DeltaTime;
 
-		//動くときの効果音を追加
+		/*動くときの効果音を追加
 		if (CheckSoundMem(PlayerSE.handle) == 0)
 		{
 			PlaySoundMem(PlayerSE.handle, PlayerSE.playType);
-		}
+		}*/
 	}
 	if (KeyDown(KEY_INPUT_RIGHT) == TRUE)
 	{
 		player.img.x += player.speed * fps.DeltaTime;
 
-		//動くときの効果音を追加
+		/*動くときの効果音を追加
 		if (CheckSoundMem(PlayerSE.handle) == 0)
 		{
 			PlaySoundMem(PlayerSE.handle, PlayerSE.playType);
-		}
+		}*/
 	}
 
 	//当たり判定を更新する
@@ -652,13 +711,13 @@ VOID PlayDraw(VOID)
 		//画像を描画
 		DrawGraph(player.img.x, player.img.y, player.img.handle, TRUE);
 
-		//デバッグのときは、当たり判定の領域を描画
+		/*デバッグのときは、当たり判定の領域を描画
 		if (GAME_DEBUG == TRUE)
 		{
 			//四角を描画
 			DrawBox(player.coll.left, player.coll.top, player.coll.right, player.coll.bottom,
 				GetColor(255, 0, 0), FALSE);
-		}
+		}*/
 	}
 
 	//ゴールを描画
@@ -667,16 +726,74 @@ VOID PlayDraw(VOID)
 		//画像を描画
 		DrawGraph(Goal.img.x, Goal.img.y, Goal.img.handle, TRUE);
 
-		//デバッグのときは、当たり判定の領域を描画
+		/*デバッグのときは、当たり判定の領域を描画
 		if (GAME_DEBUG == TRUE)
 		{
 			//四角を描画
 			DrawBox(Goal.coll.left, Goal.coll.top, Goal.coll.right, Goal.coll.bottom,
 				GetColor(255, 0, 0), FALSE);
-		}
+		}*/
 	}
 
-	DrawString(0, 0, "プレイ画面", GetColor(0, 0, 0));
+	//敵を描画
+	if (teki1.img.IsDraw == TRUE)
+	{
+		//画像を描画
+		DrawGraph(teki1.img.x, teki1.img.y, teki1.img.handle, TRUE);
+
+		/*デバッグのときは、当たり判定の領域を描画
+		if (GAME_DEBUG == TRUE)
+		{
+			//四角を描画
+			DrawBox(teki1.coll.left, teki1.coll.top, teki1.coll.right, teki1.coll.bottom,
+				GetColor(255, 0, 0), FALSE);
+		}*/
+	}
+
+	if (teki2.img.IsDraw == TRUE)
+	{
+		//画像を描画
+		DrawGraph(teki2.img.x, teki2.img.y, teki2.img.handle, TRUE);
+
+		/*デバッグのときは、当たり判定の領域を描画
+		if (GAME_DEBUG == TRUE)
+		{
+			//四角を描画
+			DrawBox(teki2.coll.left, teki2.coll.top, teki2.coll.right, teki2.coll.bottom,
+				GetColor(255, 0, 0), FALSE);
+		}*/
+	}
+
+	if (teki3.img.IsDraw == TRUE)
+	{
+		//画像を描画
+		DrawGraph(teki3.img.x, teki3.img.y, teki3.img.handle, TRUE);
+
+		/*デバッグのときは、当たり判定の領域を描画
+		if (GAME_DEBUG == TRUE)
+		{
+			//四角を描画
+			DrawBox(teki3.coll.left, teki3.coll.top, teki3.coll.right, teki3.coll.bottom,
+				GetColor(255, 0, 0), FALSE);
+		}*/
+	}
+
+	if (teki4.img.IsDraw == TRUE)
+	{
+		//画像を描画
+		DrawGraph(teki4.img.x, teki4.img.y, teki4.img.handle, TRUE);
+
+		/*デバッグのときは、当たり判定の領域を描画
+		if (GAME_DEBUG == TRUE)
+		{
+			//四角を描画
+			DrawBox(teki4.coll.left, teki4.coll.top, teki4.coll.right, teki4.coll.bottom,
+				GetColor(255, 0, 0), FALSE);
+		}*/
+	}
+
+	/*DrawString(0, 0, "プレイ画面", GetColor(0, 0, 0));*/
+
 	return;
 }
 
@@ -725,10 +842,17 @@ VOID EndProc(VOID)
 /// </summary>
 VOID EndDraw(VOID)
 {
-	//End画面の描画
+	//エンド背景を描画
+	if (end1.img.IsDraw == TRUE)
+	{
+		//画像を描画
+		DrawGraph(end1.img.x, end1.img.y, end1.img.handle, TRUE);
+	}
+
+		//End画面の描画
 	DrawGraph(EndClear.x, EndClear.y, EndClear.handle, TRUE);
 
-	DrawString(0, 0, "エンド画面", GetColor(0, 0, 0));
+	/*DrawString(0, 0, "エンド画面", GetColor(0, 0, 0));*/
 	return;
 }
 
@@ -832,7 +956,7 @@ VOID ChangeDraw(VOID)
 	//半透明終了
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawString(0, 0, "切り替え画面", GetColor(0, 0, 0));
+	/*DrawString(0, 0, "切り替え画面", GetColor(0, 0, 0));*/
 	return;
 }
 
@@ -846,7 +970,7 @@ VOID CollUpdatePlayer(CHARACTOR* chara)
 	chara->coll.top = chara->img.y;						//当たり判定を微調整
 
 	chara->coll.right = chara->img.x + chara->img.width - 50;		//当たり判定を微調整
-	chara->coll.bottom = chara->img.y + chara->img.height - 50;	//当たり判定を微調整
+	chara->coll.bottom = chara->img.y + chara->img.height - 20;	//当たり判定を微調整
 
 	return;
 }
